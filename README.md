@@ -97,7 +97,8 @@ Webデザインとコーディングのスキルさえあれば、インフラ�
     <img src="DocImages/start_firebase.png" width="400px" />
 1. プロジェクトを作成
     - プロジェクト名：HelloAngularFire、国：日本
-    <img src="DocImages/create_project.png" width="400px" /><br>
+    <img src="DocImages/create_project.png" width="400px" />
+    
     - https://console.firebase.google.com/
 
 ### ターミナルにてプロジェクトを作成
@@ -242,6 +243,7 @@ Chatツールを作りながらAngularとFirebaseの基礎を理解する。
     f();
     ```
 1. TypeScriptの基本型
+
     | 型名 | 内容 |
     |---|---|
     | boolean | 真偽値 |
@@ -249,6 +251,7 @@ Chatツールを作りながらAngularとFirebaseの基礎を理解する。
     | string | 文字列 |
     | array | 配列 |
     | any | 任意の型 |
+    
 1. ログイン処理のためのcomponentとserviceを作成（ターミナルにて）
   - ng generate component login
   - ng generate service login
