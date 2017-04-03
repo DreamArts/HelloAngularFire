@@ -1,0 +1,27 @@
+@import "../../assets/scss/sizes.scss";
+@import "../../assets/scss/colors.scss";
+
+.TimelineInput {
+  width: 100%;
+
+  &_textarea {
+    margin: $baseMargin;
+    height: $textHeight;
+    width: 80%;
+    border: $borderWidth solid $borderColor;
+    border-radius: $borderRadius;
+    float: left;
+  }
+
+  &_button {
+    margin-top: $baseMargin;
+    height: $textHeight + 4px;
+    color: $buttonTextColor;
+    background-color: $buttonColor;
+    border-radius: $borderRadius;
+    padding-left: $baseMargin;
+    padding-right: $baseMargin;
+    border: 0;
+
+  }
+}
