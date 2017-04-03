@@ -97,7 +97,7 @@ Webデザインとコーディングのスキルさえあれば、インフラ�
     <img src="DocImages/start_firebase.png" width="400px" />
 1. プロジェクトを作成
     - プロジェクト名：HelloAngularFire、国：日本
-    <img src="DocImages/create_project.png" width="400px" />
+    <img src="DocImages/create_project.png" width="400px" /><br>
     - https://console.firebase.google.com/
 
 ### ターミナルにてプロジェクトを作成
