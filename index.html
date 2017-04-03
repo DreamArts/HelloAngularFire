@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title>ChatSample</title>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.0.0-alpha1/jquery.min.js"></script>
+    </head>
+    <body>
+        <ul id="timeline"></ul>
+        <div id="inputView">
+            <input id="message" placeholder="メッセージ" />
+            <input type="submit" id="send" value="投稿"></input>
+        </div>
+
+        <!-- insert firebase configurations here. -->
+
+        <script>
+            var firebaseRef = firebase.database().ref();
+            var messagesRef = firebaseRef.child('messages');
+            // 既存メッセージを表示
+            messagesRef.on('child_added', function(snapshot) {
+                var msg = snapshot.val();
+                $('<li>').text(msg.text).prependTo('#timeline');
+            });
+
+            $('#send').click(function() {
+                // 新規メッセージを投稿
+                messagesRef.push({
+                    text: $('#message').val()
+                });
+                $("#message").val("");
+            });
+        </script>
+    </body>
+</html>
