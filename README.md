@@ -152,10 +152,103 @@ Chatツールを作りながらAngularとFirebaseの基礎を理解する。
     - JavaScriptと親和性が高く、Javaを簡略化したような文法のため、学習コストも低い。
     - TypeScriptはコンパイルするとJavaScriptに変換されて、実行される。
 1. TypeScriptの制御構造
-1. クラスの定義と呼び出し
-1. メソッドの定義と呼び出し
+    - 順次
+    ```.ts
+    var a = 1;
+    var b = 2;
+    var c = a + b;
+    ```
+    - 分岐
+    ```.ts
+    if (0 < c) {
+      console.log("plus");
+    } else {
+      console.log("zero or minus");
+    }
+    ```
+    - 繰り返し
+    ```.ts
+    // C言語っぽいfor文
+    for (var i = 0; i < 10; i++) {
+      console.log(i);
+    }
+    // C言語っぽいwhile文も使える
+    var i = 0
+    while(i < 10) {
+      console.log(i);
+      i++;
+    }
+    // 列挙
+    var array = ["a", "b", "c"];
+    for (var element of array) {
+      console.log(element);
+    }
+    // forEach関数による列挙も可
+    array.forEach((element) => {
+      console.log(element);
+    });
+    ```
+1. クラス・プロパティ・メソッドの定義と呼び出し
+    - クラス・プロパティ・メソッドの定義
+    ```.ts
+    // 下記のMessageDataクラスは、CommonDataを継承し、OnInitインターフェースを実装している
+    class MessageData extends CommonData implements OnInit {
+      // プロパティ（メンバ変数）の定義
+      private messageId: string;
+      text: string;
+      createdBy: string;
+      // インスタンス生成時に呼ばれるコンストラクタ
+      constructor() {
+      }
+      // メソッドの定義
+      getMessageId(): string {
+        return this.messageId;
+      }
+    }
+    ```
+    - インスタンスの生成とプロパティの参照
+    ```.ts
+    var message = new MessageData();
+    message.text = "メッセージ本文";
+    ```
+    - メソッドの呼び出し
+    ```.ts
+    var message = new MessageData();
+    var messageId = message.getMessageId();
+    ```
+
 1. 変数・定数
-1. TypeScriptのプリミティブ型
+    ```.ts
+    let a = 1;    // 変数（ブロックスコープ）
+    var b = 2;    // 変数（関数スコープ）
+    const c = 3;  // 定数
+    ```
+    ```.ts
+    // varは関数スコープなので、下記でも動く
+    function f() {
+      {
+        var x = 2;
+      }
+      console.log(x);
+    }
+    f();
+    // letはブロックスコープなので、下記だとエラー
+    function f() {
+      {
+        let x = 2;
+      }
+      console.log(x);
+    }
+    f();
+    ```
+1. TypeScriptの基本型
+    | 型名 | 内容 |
+    |---|---|
+    | boolean | 真偽値 |
+    | number | 数値 |
+    | string | 文字列 |
+    | array | 配列 |
+    | any | 任意の型 |
 1. ログイン処理のためのcomponentとserviceを作成（ターミナルにて）
   - ng generate component login
   - ng generate service login
