@@ -16,7 +16,7 @@ Webデザインとコーディングのスキルさえあれば、インフラ�
     - https://da-oriduru.connpass.com/event/50333/
 
 ## 事前条件
-- javascript等のオブジェクト志向言語を一つでも使ったことがあり、クラス・メソッド・フィールドなどの用語を一応理解している方を対象としています。プログラミングの初歩的な説明は割愛しますので、もし不慣れな場合は、プログラミングの入門書等で事前に予習をお願いします。
+- javascript等のオブジェクト指向言語を一つでも使ったことがあり、クラス・メソッド・フィールドなどの用語を一応理解している方を対象としています。プログラミングの初歩的な説明は割愛しますので、もし不慣れな場合は、プログラミングの入門書等で事前に予習をお願いします。
 
 ## 目次
 1. 事前課題・・・環境設定とHello World!
@@ -109,13 +109,13 @@ Webデザインとコーディングのスキルさえあれば、インフラ�
     - firebase login
 1. FirebaseのHosting用の設定をする
     - firebase init
-    <img src="DocImages/firebase_init.png" width="400px" />
         - ? What Firebase CLI features do you want to setup for this folder? : 上下キーでカーソルを動かしHostingを選択
         - ? What Firebase project do you want to associate as default? : 上下キーでカーソルを動かしHelloAngularFireを選択
         - ? What file should be used for Database Rules? (database.rules.json): そのままEnter
         - ? Do you want to install dependencies with npm now? : Yes
         - ? What do you want to use as your public directory? (public) : そのままEnter
         - ? Configure as a single-page app (rewrite all urls to /index.html)? : Yes
+        <img src="DocImages/firebase_init.png" width="400px" />
     - 以上が成功すると、public, database.rules.json, firebase.jsonなどが生成される。
 1. Hello Angularでビルドしたアプリ（AngularChat/dist以下）をFirebaseデプロイ用のプロジェクト内にコピー
     - cp -r ../AngularChat/dist/ public/
@@ -131,28 +131,36 @@ Firebase, Angularの概要。資料は後日公開する予定。
 # 基礎編
 Chatツールを作りながらAngularとFirebaseの基礎を理解する。
 
+## 完成イメージ
+<img src="DocImages/chat_image.png" width="400px" />
+
+- 画面構成は下記の通り
+    - ヘッダー（header）
+    - ログイン（login）
+    - タイムラインの入力（timeline-input）
+    - タイムライン（timeline）
+
 ## 1. Angularの4要素を理解する
 アプリの骨組みを作成する。
 ### Angularの4要素
-### componentの作成とtypescript入門
-### templateの記法とデータバインド
-### serviceの作成
-### routerの設定
+<img src="DocImages/angular_elements.jpg" width="400px" />
 
-
-## 2. Firebaseに接続する
-ログイン処理を実装する。
-
-### AngularFireの導入
-- HelloAngularFire/AngularChatのディレクトリにて
-- npm install firebase angularfire2 --save
-  - https://github.com/angular/angularfire2
-- firebaseConfig.jsを作成し、FirebaseのAPIキーをセット。
-  - jsでエラーになる場合は、src/tsconfig.app.jsonのcompilerOptionsに下記をセット
-  - "allowJs": true
-- ログイン処理を記載
+### component・serviceの作成とTypeScript入門
+1. TypeScriptとは
+    - Microsoftが開発したオープンソースの言語。
+    - JavaScriptにクラスベースのオブジェクト指向と静的型付けの機能を追加した言語で、JavaScriptの柔軟さゆえのハマりどころを最小化し、大規模開発にも対応できる。
+    - JavaScriptと親和性が高く、Javaを簡略化したような文法のため、学習コストも低い。
+    - TypeScriptはコンパイルするとJavaScriptに変換されて、実行される。
+1. TypeScriptの制御構造
+1. クラスの定義と呼び出し
+1. メソッドの定義と呼び出し
+1. 変数・定数
+1. TypeScriptのプリミティブ型
+1. ログイン処理のためのcomponentとserviceを作成（ターミナルにて）
   - ng generate component login
   - ng generate service login
+### templateの記法とデータバインド
+### routerの設定
 - timelineとtimeline-inputを追加
   - ng generate component timeline
   - ng generate component timeline-input
@@ -160,8 +168,26 @@ Chatツールを作りながらAngularとFirebaseの基礎を理解する。
   - app.modules.tsにRouterModuleなどをセット
   - app.component.htmlに「<router-outlet></router-outlet>」をセット
 
+## 2. Firebaseに接続する
+ログイン処理を実装する。
+
+### Firebase consoleからGoogle認証を有効にする（ブラウザにて）
+
+### angularfire2の導入（ターミナルにて）
+- HelloAngularFire/AngularChatのディレクトリにて
+- npm install firebase angularfire2 --save
+  - https://github.com/angular/angularfire2
+- firebaseConfig.jsを作成し、FirebaseのAPIキーをセット。
+  - jsでエラーになる場合は、src/tsconfig.app.jsonのcompilerOptionsに下記をセット
+  - "allowJs": true
+### ログイン処理の実装
+
+
+
 ## 3. Firebaseのデータの読み書きを理解する
 タイムラインの実装
+### 入力画面の作成
+
 ## 4. スタイルのつけ方を理解する
 sassの使い方
 
