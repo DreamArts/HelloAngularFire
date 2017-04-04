@@ -253,13 +253,146 @@ Chatツールを作りながらAngularとFirebaseの基礎を理解する。
     | any | 任意の型 |
     
 1. ログイン処理のためのcomponentとserviceを作成（ターミナルにて）
-  - ng generate component login
-  - ng generate service login
+    - ng generate component login
+    - ng generate service login
+    - ng serve
+1. LoginComponent, LoginServiceの呼び出し（Visual Studio Codeにて）
+    - login.component.tsを開く
+
 ### templateの記法とデータバインド
+1. 基本的なtemplateの記法
+    - HTMLがそのまま使える。
+    - sytleの指定の仕方もそのまま。
+1. データバインド（TypeScript → HTML）
+    - login.component.ts（Visual Studio Codeで編集）
+    ```.ts
+    export class LoginComponent implements OnInit {
+      // プロパティの値は同一コンポーネントのtemplate(html)からは参照可
+      errorMessage: string = "ログインできませんでした。";
+    }
+    ```
+    - login.component.html
+    ```.html
+    <!-- {{プロパティ名}}で、HTMLにプロパティの値が埋め込まれる -->
+    <div class="Login_errorMessage">{{errorMessage}}</div>
+    ```
+1. データバインド（HTML → TypeScript）とイベント処理
+    - timelineとtimeline-inputのコンポーネントを追加（ターミナルにて）
+        - ng generate component timeline
+        - ng generate component timeline-input
+    - timeline-input.component.htmlをVisual Studio Codeで編集
+    ```.html
+    <textarea #inputText></textarea>
+    <button (click)="sendMessage(inputText)">送信</button>
+    ```
+    - timeline-input.component.tsを編集
+    ```.ts
+    sendMessage(inputText: HTMLTextAreaElement) {
+      console.log(inputText.value);
+    }
+    ```
+    - 引数で受け渡しをしなくても、JavaScriptと同じようにdocument.getElementById()やJQueryでHTMLのエレメントを取得することができる。
+1. 双方向データバインド（HTML ↔ TypeScript）
+    - timeline-input.component.html
+    ```.html
+    <textarea [(ngModel)]="text"></textarea>
+    ```
+    - timeline-input.component.ts
+    ```.ts
+    text: string;
+    sendMessage(inputText: HTMLTextAreaElement) {
+      console.log(this.text);
+      this.text = "";
+    }
+    ```
+1. HTMLタグの繰り返し表示（*ngFor）
+    - timeline.component.html
+    ```.html
+    <div *ngFor="let message of messagesArray">{{message}}</div>
+    ```
+    - timelie.component.ts
+    ```.ts
+    messagesArray = ["aaa", "bbb", "ccc"];
+    ```
+1. HTMLタグの条件付き表示（*ngIf）
+    - login.component.html
+    ```.html
+    <div *ngIf="errorMessage">{{errorMessage}}</div>
+    ```
+    - login.component.ts
+    ```.ts
+    errorMessage: string = null
+    login() {
+      this.loginService.login(() => {
+        // 成功
+      }, (error) => {
+        // 失敗
+        this.errorMessage = "ログインできませんでした。(" + error.message + ")";
+      });
+    }
+    ```
+1. HTMLタグの条件付き表示（*ngSwitch）
+    - login.component.html
+    ```.html
+    <div [ngSwitch]="isLoggedIn">
+      <button *ngSwitchCase="false" class="Login_button" (click)="login()">Login</button>
+      <button *ngSwitchCase="true" class="Login_button" (click)="logout()">Logout</button>
+    </div>
+    ```
+    - login.component.ts
+    ```.ts
+    isLoggedIn = false;
+    login() {
+      this.loginService.login(() => {
+        // 成功
+        this.isLoggedIn = true;
+      }, (error) => {
+        // 失敗
+        this.isLoggedIn = false;
+      });
+    }
+    ```
+1. HTMLタグのattributeを動的に変更（[attribute名]）
+    - timeline-input.component.html
+    ```.html
+    <textarea [class]="textareaClass"></textarea>
+    <!-- 下記のような特殊記法もあるがあまり使わない -->
+    <textarea [ngClass]="textareaClass"></textarea>
+    ```
+    - timeline-input.component.ts
+    ```.ts
+    textareaClass = "TimelineInput_textarea";
+    sendMessage(inputText: HTMLTextAreaElement) {
+      if (check(inputText)) {
+        // チェックOK
+        this.textareaClass = "TimelineInput_textarea";
+      } else {
+        // チェックNG
+        this.textareaClass = "TimelineInput_textarea TimelineInput_textareaError";
+      }
+    }
+    ```
+1. HTMLタグのclassの一部を動的に追加・削除したい場合
+    - timeline-input.component.html
+    ```.html
+    <textarea [class.TimelineInput_textarea]="true" [class.TimelineInput_textareaError]="hasError"></textarea>
+    ```
+    - timeline-input.component.ts
+    ```.ts
+    hasError = false;
+    sendMessage(inputText: HTMLTextAreaElement) {
+      if (check(inputText)) {
+        // チェックOK
+        this.hasError = false;
+      } else {
+        // チェックNG
+        this.hasError = true;
+      }
+    }
+    ```
+
 ### routerの設定
-- timelineとtimeline-inputを追加
-  - ng generate component timeline
-  - ng generate component timeline-input
+
 - routerを追加
   - app.modules.tsにRouterModuleなどをセット
   - app.component.htmlに「<router-outlet></router-outlet>」をセット

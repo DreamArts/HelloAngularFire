@@ -1,5 +1,5 @@
 <div class="TimelineCell">
-  <img [src]="userImageUrl" class="TimelineCell_userImage" #userImageTag>
+  <img [src]="userImageUrl" class="TimelineCell_userImage">
   <span class="TimelineCell_userName">{{message.createdUserName}}</span>
   <span class="TimelineCell_timestamp">{{message.createdAt | date: 'yyyy/MM/dd hh:mm'}}</span>
   <div class="TimelineCell_text">{{message.text}}</div>

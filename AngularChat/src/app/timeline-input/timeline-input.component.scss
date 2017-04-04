@@ -13,6 +13,10 @@
     float: left;
   }
 
+  &_textareaError {
+    background-color: rgba(255, 0, 0, 0.3);;
+  }
+
   &_button {
     margin-top: $baseMargin;
     height: $textHeight + 4px;

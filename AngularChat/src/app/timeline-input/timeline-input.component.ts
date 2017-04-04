@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { MessagesService, MessageData } from '../services/messages.service';
 
 @Component({
@@ -7,6 +7,7 @@ import { MessagesService, MessageData } from '../services/messages.service';
   styleUrls: ['./timeline-input.component.scss']
 })
 export class TimelineInputComponent implements OnInit {
+  hasError = false;
 
   constructor(private messagesService: MessagesService) { }
 
