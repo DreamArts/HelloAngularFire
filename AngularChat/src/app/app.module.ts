@@ -2,7 +2,7 @@ import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { HttpModule } from '@angular/http';
-import { RouterModule, Routes, PreloadAllModules } from '@angular/router';
+import { RouterModule, Routes } from '@angular/router';
 import { AngularFireModule, AuthProviders, AuthMethods } from 'angularfire2';
 import { firebaseConfig } from './firebaseConfig';
 
@@ -11,6 +11,7 @@ import { TimelineComponent } from './timeline/timeline.component';
 import { TimelineInputComponent } from './timeline-input/timeline-input.component';
 import { LoginComponent } from './login/login.component';
 import { TimelineCellComponent } from './timeline-cell/timeline-cell.component';
+import { HeaderComponent } from './header/header.component';
 
 const firebaseAuthConfig = {
   provider: AuthProviders.Google,
@@ -18,7 +19,6 @@ const firebaseAuthConfig = {
 };
 
 const routeSettings: Routes = [
-  { path: 'login', component: LoginComponent },
   { path: 'timeline', component: TimelineComponent }
 ];
 
@@ -28,13 +28,14 @@ const routeSettings: Routes = [
     TimelineComponent,
     TimelineInputComponent,
     LoginComponent,
-    TimelineCellComponent
+    TimelineCellComponent,
+    HeaderComponent
   ],
   imports: [
     BrowserModule,
     FormsModule,
     HttpModule,
-    RouterModule.forRoot(routeSettings, { useHash: true, preloadingStrategy: PreloadAllModules }),
+    RouterModule.forRoot(routeSettings),
     AngularFireModule.initializeApp(firebaseConfig, firebaseAuthConfig)
   ],
   providers: [],

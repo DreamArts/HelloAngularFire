@@ -6,7 +6,6 @@ import { Component } from '@angular/core';
   styleUrls: ['./app.component.scss']
 })
 export class AppComponent {
-  headerTitle = "Angular, Firebase勉強会";
   constructor() {
   }
 }

@@ -70,6 +70,25 @@ Webデザインとコーディングのスキルさえあれば、インフラ�
     - エディタは何でもよいですが、当勉強会ではVisual Studio Codeを用います。
 
 ### Windows用
+※コマンド操作はWindows PowerShell推奨です!
+
+1. Googleアカウントを作成
+    - https://www.google.co.jp
+    - Firebaseを用いるためにはGoogleアカウントが必要です。もしGoogleアカウントをお持ちでない場合は、事前にGoogleアカウントを作成してください。
+1. gitのインストール
+    - https://git-scm.com/downloads
+1. Chrome（Webブラウザのインストール）
+    - https://www.google.co.jp/chrome/browser/desktop/
+1. node v6.10.1のインストール
+    - https://nodejs.org/ja/download/
+    - nodist等によるインストールも可
+1. angular-cli 1.0.0-beta.28.3をインストール
+    - npm install -g @angular/cli
+1. firebase-cliをインストール
+    - npm install -g firebase-tools
+1. Visual Studio Codeをインストール
+    - https://code.visualstudio.com/download
+    - エディタは何でもよいですが、当勉強会ではVisual Studio Codeを用います。
 
 ## 2. Hello Angular（事前課題2）
 1. 勉強会用のフォルダを作成（ターミナルにて）
@@ -140,6 +159,7 @@ Chatツールを作りながらAngularとFirebaseの基礎を理解する。
     - ログイン（login）
     - タイムラインの入力（timeline-input）
     - タイムライン（timeline）
+    - タイムラインの各メッセージ（timeline-cell）
 
 ## 1. Angularの4要素を理解する
 アプリの骨組みを作成する。
@@ -147,6 +167,10 @@ Chatツールを作りながらAngularとFirebaseの基礎を理解する。
 <img src="DocImages/angular_elements.jpg" width="400px" />
 
 ### component・serviceの作成とTypeScript入門
+1. componentとserviceとは
+    - componentとは、画面の構成要素を保守や再利用がしやすいように分割したもの。画面を描画するHTMLとスタイルを指定するCSSと処理を記述するTypeScriptからなる。
+    - serviceとは、データアクセスや計算ロジックなどの画面横断的な処理を担うもの。
+    - componentの処理とserviceはtypescriptで記述する。
 1. TypeScriptとは
     - Microsoftが開発したオープンソースの言語。
     - JavaScriptにクラスベースのオブジェクト指向と静的型付けの機能を追加した言語で、JavaScriptの柔軟さゆえのハマりどころを最小化し、大規模開発にも対応できる。
@@ -253,28 +277,78 @@ Chatツールを作りながらAngularとFirebaseの基礎を理解する。
     | any | 任意の型 |
     
 1. ログイン処理のためのcomponentとserviceを作成（ターミナルにて）
+    - ng generate component header
     - ng generate component login
     - ng generate service login
     - ng serve
-1. LoginComponent, LoginServiceの呼び出し（Visual Studio Codeにて）
-    - login.component.tsを開く
-
-### templateの記法とデータバインド
-1. 基本的なtemplateの記法
-    - HTMLがそのまま使える。
-    - sytleの指定の仕方もそのまま。
-1. データバインド（TypeScript → HTML）
-    - login.component.ts（Visual Studio Codeで編集）
+1. headerをapp.component.htmlに追加（Visual Studio Codeにて）
+    - app.component.html
+    ```.html
+    <app-header></app-header>
+    ```
+    - ブラウザで「http://localhost:4200」を確認
+1. loginをheader.component.htmlに追加
+    - header.component.html
+    ```.html
+    <header class="Header">
+      <app-login></app-login>
+    </header>
+    ```
+    - ブラウザで「http://localhost:4200」を確認
+1. LoginComponent, LoginServiceの呼び出し
+    - login.service.tsにダミーのログイン処理を記述
     ```.ts
+    login(success: () => void, failure: (error) => void) {
+      // 一旦無条件で成功を返す
+      success();
+    }
+    - 「success: () => void」のようにコールバック関数の型を指定することができる。
+    ```
+    - LoginServiceをlogin.component.tsから呼びだす
+        1. LoginServiceをインポートする
+        1. @Componentの中のprovidersにLoginServiceを追加する
+        1. constructorにLoginService型の変数を記載すると、DI（Dependency Injection）される
+    ```.ts
+    import { LoginService } from '../services/login.service';
+
+    @Component({
+        :
+      providers: [LoginService]
+    })
     export class LoginComponent implements OnInit {
-      // プロパティの値は同一コンポーネントのtemplate(html)からは参照可
-      errorMessage: string = "ログインできませんでした。";
+      constructor(private loginService: LoginService) { }
+        :
+      login() {
+        this.loginService.login(() => {
+          // 成功
+          console.log("login succeed.");
+        }, (error) => {
+          // 失敗
+        });
+      }
     }
     ```
-    - login.component.html
+
+### templateの記法とデータバインド
+1. templateとは
+    - HTMLを動的に生成する際の元となるもの。
+    - HTMLで記述する。
+    - CSSのクラスやスタイルの指定の仕方もHTMLそのまま。
+1. データバインド（TypeScript → HTML）
+    - header.component.ts（Visual Studio Codeで編集）
+    ```.ts
+    export class HeaderComponent implements OnInit {
+      // プロパティは同一コンポーネントのtemplate(html)から参照可
+      headerTitle = "Angular, Firebase勉強会";
+    }
+    ```
+    - header.component.html
     ```.html
-    <!-- {{プロパティ名}}で、HTMLにプロパティの値が埋め込まれる -->
-    <div class="Login_errorMessage">{{errorMessage}}</div>
+    <header class="Header">
+      <!-- {{プロパティ名}}で、HTMLにプロパティの値が埋め込まれる -->
+      <span class="Header_title">{{headerTitle}}</span>
+      <app-login></app-login>
+    </header>
     ```
 1. データバインド（HTML → TypeScript）とイベント処理
     - timelineとtimeline-inputのコンポーネントを追加（ターミナルにて）
@@ -290,6 +364,14 @@ Chatツールを作りながらAngularとFirebaseの基礎を理解する。
     sendMessage(inputText: HTMLTextAreaElement) {
       console.log(inputText.value);
     }
+    ```
+    - timeline-inputをtimeline.component.htmlに追加
+    ```.html
+    <app-timeline-input></app-timeline-input>
+    ```
+    - timelineをapp.component.htmlに追加
+    ```.html
+    <app-timeline></app-timeline>
     ```
     - 引数で受け渡しをしなくても、JavaScriptと同じようにdocument.getElementById()やJQueryでHTMLのエレメントを取得することができる。
 1. 双方向データバインド（HTML ↔ TypeScript）
@@ -392,25 +474,147 @@ Chatツールを作りながらAngularとFirebaseの基礎を理解する。
     ```
 
 ### routerの設定
+1. routerとは
+    - URLによってコンポーネントを切り替える機能。
+1. routerの設定
+    - app.modules.tsにrouter設定を追加
+    ```.ts
+    import { RouterModule, Routes } from '@angular/router';
+      :
+    const routeSettings: Routes = [
+      { path: 'timeline', component: TimelineComponent }
+    ];
 
-- routerを追加
-  - app.modules.tsにRouterModuleなどをセット
-  - app.component.htmlに「<router-outlet></router-outlet>」をセット
+    @NgModule({
+        :
+      import: [
+        :
+        RouterModule.forRoot(routeSettings),
+        :
+      ],
+    });
+    ```
+    - テンプレートHTMLに「<router-outlet>」をセットすると、URLに応じて「<router-outlet>」の部分が切り替わるようになる
+    - app.component.html
+    ```.html
+    <app-timeline></app-timeline>
+    ```
+      ↓　無条件に表示していたapp-timelineをrouter-outletに置き換え
+    ```.html
+    <router-outlet></router-outlet>
+    ```
+1. routerによる画面切り替え
+    - ログインに成功したらtimelineコンポーネントを表示するように修正する
+    - login.component.ts
+    ```.ts
+    import { Router } from '@angular/router';
+      :
+    login() {
+      this.loginService.login(() => {
+        // 成功
+        this.router.navigate(["timeline"]);
+      }, (error) => {
+        // 失敗
+          :
+      });
+    }
+    ```
 
 ## 2. Firebaseに接続する
 ログイン処理を実装する。
 
 ### Firebase consoleからGoogle認証を有効にする（ブラウザにて）
+1. ブラウザでFirebase consoleを開く
+1. 左メニューのAuthenticationを選択
+1. ログイン方法のタブを選択
+1. Googleをクリックして有効にする
+    <img src="DocImages/enable_google_authentication.png" width="400px" />
 
 ### angularfire2の導入（ターミナルにて）
-- HelloAngularFire/AngularChatのディレクトリにて
-- npm install firebase angularfire2 --save
-  - https://github.com/angular/angularfire2
-- firebaseConfig.jsを作成し、FirebaseのAPIキーをセット。
-  - jsでエラーになる場合は、src/tsconfig.app.jsonのcompilerOptionsに下記をセット
-  - "allowJs": true
-### ログイン処理の実装
+1. ターミナルにてHelloAngularFire/AngularChatのディレクトリに移動し、下記のインストールコマンドを実行
+    - npm install firebase angularfire2 --save
+    - angularfire2のソースとドキュメントは下記にある
+        - https://github.com/angular/angularfire2
+### FirebaseのAPIキーをセット
+1. FirebaseのAPIキーを取得
+    - ブラウザでFirebase consoleを開き、左メニューのOverviewを選択
+    <img src="DocImages/firebase_overview.png" width="400px" />
+    - ウェブアプリにFirebaseを追加をクリック
+    <img src="DocImages/add_webapp.png" width="400px" />
+    - var config = {...}　の部分だけをコピー
+1. Visual Studio Codeにて、AngularChat/src/app/firebaseConfig.jsを作成し、APIキーをコピー
+    - firebaseConfig.js
+    ```.js
+    export const firebaseConfig = {  
+      apiKey: "*********************************",
+      authDomain: "****************.firebaseapp.com",
+      databaseURL: "https://*****************.firebaseio.com",
+      projectId: "******************",
+      storageBucket: "******************.appspot.com",
+      messagingSenderId: "***************"
+    }
+    ```
+1. アプリ起動時にfirebaseのAPIキーを読み込むようにする
+    - app.module.ts
+    ```.ts
+    // 1. angularfire2とfirebaseConfigをインポート
+    import { AngularFireModule, AuthProviders, AuthMethods } from 'angularfire2';
+    import { firebaseConfig } from './firebaseConfig';
 
+    // 2. firebaseAuthConfigに認証方法を定義
+    const firebaseAuthConfig = {
+      provider: AuthProviders.Google,
+      method: AuthMethods.Popup
+    };
+
+    // 3. AngularFireModleにAPIキーと認証方法の設定を読み込ませる
+    @NgModule({
+        :
+      imports: [
+          :
+        AngularFireModule.initializeApp(firebaseConfig, firebaseAuthConfig)
+      ],
+        :
+    })
+    ```
+1. AngularChat/src/tsconfig.app.jsonのcompilerOptionsに「"allowJs": true」を追加
+    ```.js
+    {
+      "extends": "../tsconfig.json",
+      "compilerOptions": {
+          ：
+        "allowJs": true
+      },
+        ：
+    }
+    ```
+
+### ログイン処理の実装
+1. LoginServiceにログイン処理を追加
+    - login.service.ts
+    ```.ts
+    // 1. angularfire2をインポート
+    import { AngularFire } from 'angularfire2';
+    @Injectable()
+    export class LoginService {
+      // 2. constructorでDIにより生成されたAngularFireのインスタンスを受け取る変数を定義
+      constructor(private af: AngularFire) { }
+
+      // 3. ログイン処理を実装
+      login(success: () => void, failure: (error) => void) {
+        this.af.auth.login().then((authState) => {
+          // 成功
+          success();
+        }, (error) => {
+          // 失敗
+          failure(error);
+        });
+      }
+    }
+    ```
+    - 動作確認
+1. ログアウト処理を追加
+1. ログイン判定処理実行
 
 
 ## 3. Firebaseのデータの読み書きを理解する
