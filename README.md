@@ -1198,6 +1198,11 @@ export class MessageData {
 
 ## 4. UIライブラリの利用
 UIを改善する
+
+```
+git checkout ui_library
+```
+
 ### UIライブラリの概要
 - semantic.uiやbootstrapなどWeb画面を作る際のメジャーなライブラリをAngularでも用いることができる。
 - Angular2のTypeScriptで使いやすいようにラップしたライブラリも存在する
