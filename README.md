@@ -531,6 +531,7 @@ git checkout angular_structures
     ```.ts
     import { Router } from '@angular/router';
       :
+    constructor(private loginService: LoginService, private router: Router) { }
     login() {
       this.loginService.login(() => {
         // 成功
@@ -679,6 +680,11 @@ git checkout login_firebase
 
 ## 3. Firebaseのデータの読み書きを理解する
 タイムラインを実装する
+
+```
+git checkout read_write_realtimedatabase
+```
+
 ### 入力画面の作成
 メッセージ入力画面を作成することで、Firebaseへのデータの書き込み方法を理解する。
 1. timeline-input.component.htmlにテキストエリアと送信ボタンを追加

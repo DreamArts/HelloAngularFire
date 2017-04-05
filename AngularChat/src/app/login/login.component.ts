@@ -15,6 +15,14 @@ export class LoginComponent implements OnInit {
   constructor(private loginService: LoginService, private router: Router) { }
 
   ngOnInit() {
+    this.loginService.isLoggedIn((isLoggedIn) => {
+      this.isLoggedIn = isLoggedIn;
+      if (isLoggedIn) {
+        this.router.navigate(["timeline"]);
+      } else {
+        this.router.navigate([""]);
+      }
+    })
   }
 
   login() {
@@ -27,6 +35,11 @@ export class LoginComponent implements OnInit {
       console.log("失敗");
       this.errorMessage = "ログインできませんでした。";
     });
+  }
+
+  logout() {
+    this.loginService.logout();
+    this.router.navigate([""]);
   }
 
 }
