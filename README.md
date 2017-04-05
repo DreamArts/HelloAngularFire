@@ -1156,6 +1156,74 @@ export class MessageData {
 
 ## 4. UIライブラリの利用
 UIを改善する
+### UIライブラリの概要
+- semantic.uiやbootstrapなどWeb画面を作る際のメジャーなライブラリをAngularでも用いることができる。
+- Angular2のTypeScriptで使いやすいようにラップしたライブラリも存在する
+    - ngSemantic
+        - https://github.com/vladotesanovic/ngSemantic
+    - ngBootstrap
+        - https://ng-bootstrap.github.io/#/home
+    - いずれも非常に有名で機能も豊富なライブラリで、どっちにも似たような機能があるが、全ての機能がAngular用にコンポーネント化されている訳ではない。
+    - それぞれの部品の完成度は高いが、そのぶん自由度は少ない。
+    - セットアップは少し面倒。
+    - .jsファイルを切り出してTypeScriptからインポートすれば、ngSemantic, ngBootstrapを用いなくても利用することができる。
+### ngSemanticを使えるようにする
+1. ngSemanticをインストール（ターミナルにて）
+    - AngularChatのディレクトリに移動
+    - npm install ng-semantic --save
+    - npm install jquery --save
+    - ソースとドキュメントは下記参照
+        - https://github.com/vladotesanovic/ngSemantic
+1. 下記をダウンロードし解凍した中身をsrc/assets/semanticの下にすべてコピー
+    - https://github.com/Semantic-Org/Semantic-UI-CSS/archive/master.zip
+1. AngularChat/.angular-cli.jsonを編集
+    ```.js
+    "apps": [
+      {
+          :
+        "styles": [
+          "styles.scss",
+          "assets/semantic/semantic.min.css"
+        ],
+        "scripts": [
+          "../node_modules/jquery/dist/jquery.min.js",
+          "assets/semantic/semantic.min.js"
+        ],
+          :
+      }
+    ],
+    ```
+1. app.module.tsにてNgSemanticModuleを読み込む
+    ```.ts
+    import { NgSemanticModule } from "ng-semantic";
+      :
+    @NgModule({
+        :
+      imports: [
+        BrowserModule,
+        FormsModule,
+        HttpModule,
+        NgSemanticModule,
+        RouterModule.forRoot(routeSettings),
+        AngularFireModule.initializeApp(firebaseConfig, firebaseAuthConfig)
+      ],
+        :
+    })
+    ```
+### タイムラインの画像がタップされた際にモーダルで拡大表示する
+- timeline-cell.component.html
+    ```.html
+    <div *ngIf="imageUrl">
+      <!-- 1. 写真のプレビューがクリックされた際にモーダル画面を呼びだす -->
+      <img [src]="imageUrl" class="TimelineCell_image" (click)="detailImage.show()">
+      <!-- 2. 表示されるモーダルのコンポーネント -->
+      <sm-modal title="" class="basic" #detailImage>
+        <modal-content>
+          <img [src]="imageUrl" class="TimelineCell_detailImage" />
+        </modal-content>
+      </sm-modal>
+    </div>
+    ```
 
 ## 付録：デバッグツールの利用
 ## 付録：単体テストツールの利用
