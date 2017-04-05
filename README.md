@@ -172,6 +172,11 @@ Chatツールを作りながらAngularとFirebaseの基礎を理解する。
 
 ## 1. Angularの4要素を理解する
 アプリの骨組みを作成する。
+
+```
+git checkout angular_structures
+```
+
 ### Angularの4要素
 <img src="DocImages/angular_elements.jpg" width="400px" />
 
