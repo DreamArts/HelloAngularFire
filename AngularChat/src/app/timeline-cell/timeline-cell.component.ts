@@ -8,10 +8,13 @@ import { MessageData } from '../services/messages.service';
 })
 export class TimelineCellComponent implements OnInit {
   @Input() message: MessageData;
+  imageUrl: string = null;
   userImageUrl = "https://github.com/DreamArts/HelloAngularFire/blob/master/AngularChat/src/assets/icons/transparent.png?raw=true";
   constructor() { }
 
   ngOnInit() {
+    if (this.message.isPhoto && this.message.downloadUrl) {
+      this.imageUrl = this.message.downloadUrl;
+    }
   }
-
 }

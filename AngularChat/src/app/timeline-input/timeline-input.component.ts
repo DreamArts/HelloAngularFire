@@ -14,6 +14,7 @@ export class TimelineInputComponent implements OnInit {
   constructor(private messagesService: MessagesService) { }
 
   ngOnInit() {
+    this.observeFileSelection();
   }
   sendMessage(inputText: HTMLTextAreaElement) {
     if (this.check(inputText)) {
@@ -33,4 +34,20 @@ export class TimelineInputComponent implements OnInit {
     // TODO: 入力チェック処理を実装
     return (inputText && inputText.value) ? true : false;
   }
+      /** ファイルの選択を監視 */
+    private observeFileSelection() {
+      const inputTag = document.getElementById("InputFiles");
+      if (inputTag) {
+        inputTag.addEventListener("change", (event) => {
+          const target = <HTMLInputElement>event.target;
+          this.uploadFiles(target.files);
+        });
+      }
+    }
+
+    /** ファイルのアップロード */
+    private uploadFiles(files: FileList) {
+      this.messagesService.sendFiles(files);
+    }
+
 }

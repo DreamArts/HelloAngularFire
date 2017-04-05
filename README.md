@@ -1031,22 +1031,28 @@ git checkout firebase_storage
 1. ファイルのアップロード処理を実装
     - messages.service.ts
     ```.ts
-    // 1. FirebaseAppをインポート
+    // 1. Inject, FirebaseAppをインポート
+    import { Injectable, Inject } from '@angular/core';
     import { AngularFire, FirebaseListObservable, FirebaseApp } from 'angularfire2';
       :
-    // 2. ファイル送信のロジックを実装
+      // 2. FirebaseAppへの参照を受け取る
+      constructor(private af: AngularFire, @Inject(FirebaseApp) private firApp: firebase.app.App) { }
+      // 3. ファイル送信のロジックを実装
+      sendMessage(message: MessageData): firebase.database.ThenableReference {
+        return this.af.database.list("/messages").push(message);
+      }
       sendFiles(files: FileList) {
         for (let i = 0; i < files.length; i++) {
           const file = files.item(i);
-          // 2-1. メッセージを投稿してIDを取得
+          // 3-1. メッセージを投稿してIDを取得
           const msg = new MessageData(null);
           msg.fileType = file.type;
           msg.fileName = file.name;
           const msgRef = this.sendMessage(msg);
-          // 2-2. メッセージのIDをストレージのパスにセット
-          const storagePath = FirebaseKeys.MESSAGES + "/" + msgRef.key + "_" + msg.fileName;
+          // 3-2. メッセージのIDをストレージのパスにセット
+          const storagePath = "/messages/" + msgRef.key + "_" + msg.fileName;
           const storageRef = this.firApp.storage().ref().child(storagePath);
-          // 2-3. ファイルをストレージにアップロードし、完了したらメッセージデータを更新
+          // 3-3. ファイルをストレージにアップロードし、完了したらメッセージデータを更新
           const task = storageRef.put(file);
           task.then((snapshot) => {
             msg.filePath = snapshot.metadata.fullPath;
@@ -1057,13 +1063,13 @@ git checkout firebase_storage
       }
         ：
     export class MessageData {
-      // 3. ファイル用の項目を追加
+      // 4. ファイル用の項目を追加
       fileType: string;
       fileName: string;
       filePath: string;
       downloadUrl: string;
         :
-      // 4. ファイルタイプの判定処理を追加（後ほど使う）
+      // 5. ファイルタイプの判定処理を追加（後ほど使う）
       isPhoto(): boolean {
         return (this.fileType && this.fileType.match(/image\/.*/ig)) ? true : false;
       }
@@ -1096,6 +1102,11 @@ git checkout firebase_storage
 
 ## 3. ログインユーザ情報を持ち回る
 Googleからユーザ情報を取得し、ローカルに保存して持ち回る。
+
+```
+git checkout save_userinfo
+```
+
 1. 現在のユーザ情報を保存して持ち回るクラス（CurrentUser）を作成する
     - login.service.ts
     ```.ts
