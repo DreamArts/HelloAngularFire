@@ -172,6 +172,11 @@ Chatツールを作りながらAngularとFirebaseの基礎を理解する。
 
 ## 1. Angularの4要素を理解する
 アプリの骨組みを作成する。
+
+```
+git checkout angular_structures
+```
+
 ### Angularの4要素
 <img src="DocImages/angular_elements.jpg" width="400px" />
 
@@ -339,6 +344,11 @@ Chatツールを作りながらAngularとFirebaseの基礎を理解する。
       }
     }
     ```
+    - login.component.htmlからログイン処理
+    ```.html
+    <button (click)="login()">Login</button>
+    ```
+    - ブラウザで動作確認
 
 ### templateの記法とデータバインド
 1. templateとは
@@ -365,6 +375,7 @@ Chatツールを作りながらAngularとFirebaseの基礎を理解する。
     - timelineとtimeline-inputのコンポーネントを追加（ターミナルにて）
         - ng generate component timeline
         - ng generate component timeline-input
+        - ng serve
     - timeline-input.component.htmlをVisual Studio Codeで編集
     ```.html
     <textarea #inputText></textarea>
@@ -385,7 +396,7 @@ Chatツールを作りながらAngularとFirebaseの基礎を理解する。
     <app-timeline></app-timeline>
     ```
     - 引数で受け渡しをしなくても、JavaScriptと同じようにdocument.getElementById()やJQueryでHTMLのエレメントを取得することができる。
-1. 双方向データバインド（HTML ↔ TypeScript）
+1. 双方向データバインド（HTML ↔ TypeScript） <- 実装不要
     - timeline-input.component.html
     ```.html
     <textarea [(ngModel)]="text"></textarea>
@@ -407,7 +418,7 @@ Chatツールを作りながらAngularとFirebaseの基礎を理解する。
     ```.ts
     messagesArray = ["aaa", "bbb", "ccc"];
     ```
-1. HTMLタグの条件付き表示（*ngIf）
+1. HTMLタグの条件付き表示（*ngIf） <- 実装不要
     - login.component.html
     ```.html
     <div *ngIf="errorMessage">{{errorMessage}}</div>
@@ -445,7 +456,7 @@ Chatツールを作りながらAngularとFirebaseの基礎を理解する。
       });
     }
     ```
-1. HTMLタグのattributeを動的に変更（[attribute名]）
+1. HTMLタグのattributeを動的に変更（[attribute名]） <- 実装不要
     - timeline-input.component.html
     ```.html
     <textarea [class]="textareaClass"></textarea>
@@ -465,7 +476,7 @@ Chatツールを作りながらAngularとFirebaseの基礎を理解する。
       }
     }
     ```
-1. HTMLタグのclassの一部を動的に追加・削除したい場合
+1. HTMLタグのclassの一部を動的に追加・削除したい場合 <- 実装不要
     - timeline-input.component.html
     ```.html
     <textarea [class.TimelineInput_textarea]="true" [class.TimelineInput_textareaError]="hasError"></textarea>
@@ -520,6 +531,7 @@ Chatツールを作りながらAngularとFirebaseの基礎を理解する。
     ```.ts
     import { Router } from '@angular/router';
       :
+    constructor(private loginService: LoginService, private router: Router) { }
     login() {
       this.loginService.login(() => {
         // 成功
@@ -533,6 +545,10 @@ Chatツールを作りながらAngularとFirebaseの基礎を理解する。
 
 ## 2. Firebaseに接続する
 ログイン処理を実装する。
+
+```
+git checkout login_firebase
+```
 
 ### Firebase consoleからGoogle認証を有効にする（ブラウザにて）
 1. ブラウザでFirebase consoleを開く
@@ -664,6 +680,11 @@ Chatツールを作りながらAngularとFirebaseの基礎を理解する。
 
 ## 3. Firebaseのデータの読み書きを理解する
 タイムラインを実装する
+
+```
+git checkout read_write_realtimedatabase
+```
+
 ### 入力画面の作成
 メッセージ入力画面を作成することで、Firebaseへのデータの書き込み方法を理解する。
 1. timeline-input.component.htmlにテキストエリアと送信ボタンを追加
@@ -824,6 +845,7 @@ Angularにて親から子のコンポーネントにデータを受け渡す方�
     ```.ts
     // 1. angular/coreからInputをインポート
     import { Component, OnInit, Input } from '@angular/core';
+    import { MessageData } from '../services/messages.service';
       :
     export class TimelineCellComponent implements OnInit {
       // 2. @Input()の後に受け取るデータを定義
@@ -843,6 +865,11 @@ Angularにて親から子のコンポーネントにデータを受け渡す方�
 
 ## 4. スタイルのつけ方を理解する
 スタイルのつけ方、scssの使い方をマスターする。
+
+```
+git checkout add_styles
+```
+
 ### scssについて
 1. scssとは
     - CSSで変数、サブルーチン、演算子、if文、for文、importなどを使えるようにした言語
@@ -967,6 +994,11 @@ Chatツールを改善しながら、より実用的なトピックを理解す�
 
 ## 2. Firebase Storageを使う
 ファイルのアップロード・ダウンロード
+
+```
+git checkout firebase_storage
+```
+
 1. ファイル選択画面を表示する
     - timeline-input.component.html
     ```.html
@@ -999,22 +1031,28 @@ Chatツールを改善しながら、より実用的なトピックを理解す�
 1. ファイルのアップロード処理を実装
     - messages.service.ts
     ```.ts
-    // 1. FirebaseAppをインポート
+    // 1. Inject, FirebaseAppをインポート
+    import { Injectable, Inject } from '@angular/core';
     import { AngularFire, FirebaseListObservable, FirebaseApp } from 'angularfire2';
       :
-    // 2. ファイル送信のロジックを実装
+      // 2. FirebaseAppへの参照を受け取る
+      constructor(private af: AngularFire, @Inject(FirebaseApp) private firApp: firebase.app.App) { }
+      // 3. ファイル送信のロジックを実装
+      sendMessage(message: MessageData): firebase.database.ThenableReference {
+        return this.af.database.list("/messages").push(message);
+      }
       sendFiles(files: FileList) {
         for (let i = 0; i < files.length; i++) {
           const file = files.item(i);
-          // 2-1. メッセージを投稿してIDを取得
+          // 3-1. メッセージを投稿してIDを取得
           const msg = new MessageData(null);
           msg.fileType = file.type;
           msg.fileName = file.name;
           const msgRef = this.sendMessage(msg);
-          // 2-2. メッセージのIDをストレージのパスにセット
-          const storagePath = FirebaseKeys.MESSAGES + "/" + msgRef.key + "_" + msg.fileName;
+          // 3-2. メッセージのIDをストレージのパスにセット
+          const storagePath = "/messages/" + msgRef.key + "_" + msg.fileName;
           const storageRef = this.firApp.storage().ref().child(storagePath);
-          // 2-3. ファイルをストレージにアップロードし、完了したらメッセージデータを更新
+          // 3-3. ファイルをストレージにアップロードし、完了したらメッセージデータを更新
           const task = storageRef.put(file);
           task.then((snapshot) => {
             msg.filePath = snapshot.metadata.fullPath;
@@ -1025,13 +1063,13 @@ Chatツールを改善しながら、より実用的なトピックを理解す�
       }
         ：
     export class MessageData {
-      // 3. ファイル用の項目を追加
+      // 4. ファイル用の項目を追加
       fileType: string;
       fileName: string;
       filePath: string;
       downloadUrl: string;
         :
-      // 4. ファイルタイプの判定処理を追加（後ほど使う）
+      // 5. ファイルタイプの判定処理を追加（後ほど使う）
       isPhoto(): boolean {
         return (this.fileType && this.fileType.match(/image\/.*/ig)) ? true : false;
       }
@@ -1064,6 +1102,11 @@ Chatツールを改善しながら、より実用的なトピックを理解す�
 
 ## 3. ログインユーザ情報を持ち回る
 Googleからユーザ情報を取得し、ローカルに保存して持ち回る。
+
+```
+git checkout save_userinfo
+```
+
 1. 現在のユーザ情報を保存して持ち回るクラス（CurrentUser）を作成する
     - login.service.ts
     ```.ts
