@@ -845,6 +845,7 @@ Angularにて親から子のコンポーネントにデータを受け渡す方�
     ```.ts
     // 1. angular/coreからInputをインポート
     import { Component, OnInit, Input } from '@angular/core';
+    import { MessageData } from '../services/messages.service';
       :
     export class TimelineCellComponent implements OnInit {
       // 2. @Input()の後に受け取るデータを定義

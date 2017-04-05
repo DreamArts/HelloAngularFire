@@ -8,7 +8,7 @@ import { MessageData } from '../services/messages.service';
 })
 export class TimelineCellComponent implements OnInit {
   @Input() message: MessageData;
-
+  userImageUrl = "https://github.com/DreamArts/HelloAngularFire/blob/master/AngularChat/src/assets/icons/transparent.png?raw=true";
   constructor() { }
 
   ngOnInit() {
