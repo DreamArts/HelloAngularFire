@@ -16,5 +16,8 @@ export class TimelineCellComponent implements OnInit {
     if (this.message.isPhoto && this.message.downloadUrl) {
       this.imageUrl = this.message.downloadUrl;
     }
+    if (this.message && this.message.userImageUrl) {
+      this.userImageUrl = this.message.userImageUrl;
+    }
   }
 }

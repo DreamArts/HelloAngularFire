@@ -1,6 +1,7 @@
 import { Injectable, Inject } from '@angular/core';
 import { AngularFire, FirebaseListObservable, FirebaseApp } from 'angularfire2';
 import * as firebase from 'firebase';
+import { CurrentUser } from './login.service';
 
 @Injectable()
 export class MessagesService {
@@ -49,6 +50,7 @@ export class MessageData {
   createdUserName: string;
   createdBy: string;
   createdAt: any;
+  userImageUrl: string;
   fileType: string;
   fileName: string;
   filePath: string;
@@ -61,7 +63,8 @@ export class MessageData {
         this[key] = item[key];
       }
     } else {
-      this.createdUserName = "伊勢川 暁";
+      this.createdUserName = CurrentUser.userName();
+      this.userImageUrl = CurrentUser.photoUrl();
       this.createdAt = firebase.database.ServerValue.TIMESTAMP;
     }
   }
