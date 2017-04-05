@@ -5,6 +5,7 @@
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
+    "fixNgSemantic": "cp ng-semantic.d.ts node_modules/ng-semantic/", 
     "build": "ng build",
     "test": "ng test",
     "lint": "ng lint",

@@ -1201,6 +1201,9 @@ UIを改善する
 
 ```
 git checkout ui_library
+cd AngularChat
+npm install
+npm run fixNgSemantic
 ```
 
 ### UIライブラリの概要
