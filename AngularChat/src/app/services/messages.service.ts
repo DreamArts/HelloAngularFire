@@ -8,6 +8,16 @@ export class MessagesService {
 
   constructor(private af: AngularFire) { }
 
+  observeMessages(success: (messages: Array<MessageData>) => void) {
+    this.af.database.list("/messages").subscribe((items) => {
+      const messages = new Array<MessageData>();
+      for (const item of items) {
+        messages.push(new MessageData(item));
+      }
+      success(messages);
+    });
+  }
+
   sendMessage(message: MessageData) {
         this.af.database.list("/messages").push(message);
   }
@@ -23,7 +33,10 @@ export class MessageData {
 
   constructor(item) {
     if (item) {
-      // TODO: 受け取ったオブジェクトをMessageDataのプロパティにマッピングする
+      this.messageId = item.$key;
+      for (const key of Object.keys(item)) {
+        this[key] = item[key];
+      }
     } else {
       this.createdUserName = "伊勢川 暁";
       this.createdAt = firebase.database.ServerValue.TIMESTAMP;
