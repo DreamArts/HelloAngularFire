@@ -11,6 +11,7 @@ import { HeaderComponent } from './header/header.component';
 import { LoginComponent } from './login/login.component';
 import { TimelineComponent } from './timeline/timeline.component';
 import { TimelineInputComponent } from './timeline-input/timeline-input.component';
+import { TimelineCellComponent } from './timeline-cell/timeline-cell.component';
 
 const routeSettings: Routes = [
   { path: 'timeline', component: TimelineComponent }
@@ -28,7 +29,8 @@ const firebaseAuthConfig = {
     HeaderComponent,
     LoginComponent,
     TimelineComponent,
-    TimelineInputComponent
+    TimelineInputComponent,
+    TimelineCellComponent
   ],
   imports: [
     BrowserModule,
