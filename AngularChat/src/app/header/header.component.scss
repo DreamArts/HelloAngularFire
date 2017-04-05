@@ -1,0 +1,17 @@
+@import "../../assets/scss/sizes.scss";
+@import "../../assets/scss/colors.scss";
+
+.Header {  
+  height: $headerHeight;
+  width: 100%;
+  background-color: $headerColor;
+
+  &_title {
+    color: white;
+    margin-left: $baseMargin;
+    height: $headerHeight;
+    line-height: $headerHeight;
+    text-align: center;
+    float: left;
+  }
+}
