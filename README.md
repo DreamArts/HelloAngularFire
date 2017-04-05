@@ -344,6 +344,11 @@ git checkout angular_structures
       }
     }
     ```
+    - login.component.htmlからログイン処理
+    ```.html
+    <button (click)="login()">Login</button>
+    ```
+    - ブラウザで動作確認
 
 ### templateの記法とデータバインド
 1. templateとは
@@ -538,6 +543,10 @@ git checkout angular_structures
 
 ## 2. Firebaseに接続する
 ログイン処理を実装する。
+
+```
+git checkout login_firebase
+```
 
 ### Firebase consoleからGoogle認証を有効にする（ブラウザにて）
 1. ブラウザでFirebase consoleを開く
