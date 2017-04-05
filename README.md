@@ -1242,7 +1242,7 @@ git checkout ui_library
     ```
 1. app.module.tsにてNgSemanticModuleを読み込む
     ```.ts
-    import { NgSemanticModule } from "ng-semantic";
+    import { NgSemanticModule } from 'ng-semantic/ng-semantic';
       :
     @NgModule({
         :

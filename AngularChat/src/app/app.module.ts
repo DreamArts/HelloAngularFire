@@ -5,7 +5,7 @@ import { HttpModule } from '@angular/http';
 import { RouterModule, Routes } from '@angular/router';
 import { AngularFireModule, AuthProviders, AuthMethods } from 'angularfire2';
 import { firebaseConfig } from './firebaseConfig';
-import { NgSemanticModule } from "ng-semantic";
+import { NgSemanticModule } from 'ng-semantic/ng-semantic';
 
 import { AppComponent } from './app.component';
 import { TimelineComponent } from './timeline/timeline.component';
