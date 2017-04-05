@@ -1,4 +1,3 @@
-<div class="TimelineInput">
-  <textarea [class.TimelineInput_textarea]="true" [class.TimelineInput_textareaError]="hasError" placeholder="メッセージを入力" #inputText></textarea>
-  <button class="TimelineInput_button" (click)="sendMessage(inputText)">送信</button>
-</div>
+<textarea [class.TimelineInput_textarea]="true" [class.TimelineInput_textareaError]="hasError" placeholder="メッセージを入力" #inputText></textarea>
+<button class="TimelineInput_button" (click)="sendMessage(inputText)">送信</button>
+<input id="InputFiles" class="TimelineInput_inputFiles" type="file" name="files[]" accept="image/*" multiple />

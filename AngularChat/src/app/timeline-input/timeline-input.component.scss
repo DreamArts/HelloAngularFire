@@ -2,7 +2,6 @@
 @import "../../assets/scss/colors.scss";
 
 .TimelineInput {
-  width: 100%;
 
   &_textarea {
     margin: $baseMargin;
@@ -26,6 +25,9 @@
     padding-left: $baseMargin;
     padding-right: $baseMargin;
     border: 0;
+  }
 
+  &_inputFiles {
+    margin-left: $baseMargin;
   }
 }

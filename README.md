@@ -32,11 +32,11 @@ Webデザインとコーディングのスキルさえあれば、インフラ�
     1. Angularの4要素を理解する・・・アプリの骨組みを作成
     1. Firebaseに接続する・・・ログイン処理の実装
     1. Firebaseのデータの読み書きを理解する・・・タイムラインの実装
-    1. スタイルのつけ方を理解する・・・sassの使い方
+    1. スタイルのつけ方を理解する・・・scssの使い方
 1. 応用編・・・Chatツールを改善しながら、より実用的なトピックを理解する
     1. Firebaseにデプロイする
     1. Firebase Storageを使う・・・ファイルのアップロード・ダウンロード
-    1. Singletonパターンを理解する・・・ユーザ情報を取得する
+    1. ログインユーザ情報を持ち回る・・・ユーザ情報の取得・localStorageの利用
     1. UIライブラリの利用・・・UIを改善する
     - 付録：デバッグツールの利用
     - 付録：単体テストツールの利用
@@ -45,7 +45,7 @@ Webデザインとコーディングのスキルさえあれば、インフラ�
     1. 成果発表
 
 ## 勉強会の参加前に
-- 勉強会参加前に、事前課題1~3を実施しておいてください。
+- 勉強会参加前に、事前課題1~3（環境のセットアップとHello Worldによる動作確認）を実施しておいてください。
 - 事前課題がうまくできない場合は、早めに受付にお越しください。
 
 # 事前課題
@@ -89,6 +89,15 @@ Webデザインとコーディングのスキルさえあれば、インフラ�
 1. Visual Studio Codeをインストール
     - https://code.visualstudio.com/download
     - エディタは何でもよいですが、当勉強会ではVisual Studio Codeを用います。
+
+#### Windowsで npm installが上手くいかない場合
+- Case1: @angular/cliをインストールしてもngコマンドが使えない
+  - 別のバージョンやディレクトリのnpmにインストールされている可能性があります。
+  - `$ npm config edit` から `prefix` の行をコメントアウトして再度試してください。
+
+- Case2: インストール時に@angular/cliやfirebase-toolsが見つからない場合
+  - npmが利用するレジストリの設定が変わっている可能性があります。
+  - `$ npm config edit` から `registry` の行をコメントアウトして再度試してください。
 
 ## 2. Hello Angular（事前課題2）
 1. 勉強会用のフォルダを作成（ターミナルにて）
@@ -281,6 +290,8 @@ Chatツールを作りながらAngularとFirebaseの基礎を理解する。
     - ng generate component login
     - ng generate service login
     - ng serve
+    - src/app/servicesのディレクトリを作成
+    - login.service.ts, spec.tsをsrc/app/servicesの下に移動
 1. headerをapp.component.htmlに追加（Visual Studio Codeにて）
     - app.component.html
     ```.html
@@ -535,6 +546,7 @@ Chatツールを作りながらAngularとFirebaseの基礎を理解する。
     - npm install firebase angularfire2 --save
     - angularfire2のソースとドキュメントは下記にある
         - https://github.com/angular/angularfire2
+
 ### FirebaseのAPIキーをセット
 1. FirebaseのAPIキーを取得
     - ブラウザでFirebase consoleを開き、左メニューのOverviewを選択
@@ -614,26 +626,537 @@ Chatツールを作りながらAngularとFirebaseの基礎を理解する。
     ```
     - 動作確認
 1. ログアウト処理を追加
-1. ログイン判定処理実行
-
+    - login.service.ts
+    ```.ts
+    logout() {
+      this.af.auth.logout();
+    }
+    ```
+    - login.component.ts
+    ```.ts
+    logout() {
+      this.loginService.logout();
+      this.router.navigate([""]);
+    }
+    ```
+1. アプリ起動時のログイン判定処理を追加
+    - login.service.ts
+    ```.ts
+    isLoggedIn(result: (isLoggedIn: boolean) => void) {
+      this.af.auth.subscribe((auth) => {
+        result(auth ? true : false);
+      }, (error) => {
+        result(false);
+      });
+    }    
+    ```
+    - login.component.ts
+    ```.ts
+    ngOnInit() {
+      this.loginService.isLoggedIn((isLoggedIn) => {
+        this.isLoggedIn = isLoggedIn;
+        if (isLoggedIn) {
+          this.router.navigate(["timeline"]);
+        }
+      });
+    }    
+    ```
 
 ## 3. Firebaseのデータの読み書きを理解する
-タイムラインの実装
+タイムラインを実装する
 ### 入力画面の作成
+メッセージ入力画面を作成することで、Firebaseへのデータの書き込み方法を理解する。
+1. timeline-input.component.htmlにテキストエリアと送信ボタンを追加
+    ```.html
+    <textarea [class.TimelineInput_textarea]="true" [class.TimelineInput_textareaError]="hasError" placeholder="メッセージを入力" #inputText></textarea>
+    <button class="TimelineInput_button" (click)="sendMessage(inputText)">送信</button>
+    ```
+1. メッセージデータをFirebaseに登録するためのサービスを作る（ターミナルにて）
+    - ng generate service messages
+    - 作成されたmessages.service.ts, spec.tsをsrc/app/servicesの下に移動
+1. messages.service.tsにデータの登録処理を記載する
+    ```.ts
+    // 1. Firebase関連ライブラリをインポート
+    import { AngularFire, FirebaseListObservable } from 'angularfire2';
+    import * as firebase from 'firebase';
+
+    @Injectable()
+    export class MessagesService {
+      // 2. AngularFireのインスタンスを受け取る
+      constructor(private af: AngularFire) { }
+
+      // 3. データの登録処理を記載する
+      sendMessage(message: MessageData) {
+        this.af.database.list("/messages").push(message);
+      }
+    }
+
+    // 4. MessageDataのクラスを定義する
+    export class MessageData {
+      messageId: string;
+      text: string;
+      createdUserName: string;
+      createdBy: string;
+      createdAt: any;
+
+      constructor(item) {
+        if (item) {
+          // TODO: 受け取ったオブジェクトをMessageDataのプロパティにマッピングする
+        } else {
+          this.createdUserName = "伊勢川 暁";
+          this.createdAt = firebase.database.ServerValue.TIMESTAMP;
+        }
+      }
+    }
+    ```
+1. timeline-input.component.tsでMessagesServiceを呼びだす
+    ```.ts
+    // 1. MessagesServiceをインポート
+    import { MessagesService, MessageData } from '../services/messages.service';
+
+    // 2. providersにMessagesServiceを追加
+    @Component({
+      selector: 'app-timeline-input',
+      templateUrl: './timeline-input.component.html',
+      styleUrls: ['./timeline-input.component.scss'],
+      providers: [MessagesService]
+    })
+
+    export class TimelineInputComponent implements OnInit {
+        :
+      // 3. constructorでDIされたMessagesServiceのインスタンスを受け取る
+      constructor(private messagesService: MessagesService) { }
+        :
+      // 4. 送信ボタンが押された際に、メッセージの投稿処理を呼びだす
+      sendMessage(inputText: HTMLTextAreaElement) {
+        const message = new MessageData(null);
+        message.text = inputText.value;
+        this.messagesService.sendMessage(message);
+        inputText.value = "";
+      }
+    }
+    ```
+
+### 一覧画面の作成
+タイムラインのメッセージ一覧画面を作成することで、Firebaseからのデータ取得と、Angularによるリスト表示の方法を理解する。
+1. messages.service.tsにメッセージデータの取得処理を記載する
+    ```.ts
+    export class MessagesService {
+        :
+      // 1. メッセージデータの取得処理を実装
+      observeMessages(success: (messages: Array<MessageData>) => void) {
+        this.af.database.list("/messages").subscribe((items) => {
+          const messages = new Array<MessageData>();
+          for (const item of items) {
+            messages.push(new MessageData(item));
+          }
+          if (success) {
+            success(messages);
+          }
+        }, (error) => {
+          
+        });
+      }
+        :
+    }
+
+    export class MessageData {
+        :
+      constructor(item) {
+        if (item) {
+          // 2. Firebaseから取得したデータをMessageDataクラスにマッピングする処理を実装
+          this.messageId = item.$key;
+          for (const key of Object.keys(item)) {
+            this[key] = item[key];
+          }
+        } else {
+          :
+        }
+      }
+    }
+    ```
+1. timeline.component.tsでMessagesServiceのobserveMessagesを呼びだす
+    ```.ts
+    // 1. MessagesServiceをインポート
+    import { MessagesService, MessageData } from '../services/messages.service';
+
+    // 2. providersにMessagesServiceを追加
+    @Component({
+      selector: 'app-timeline',
+      templateUrl: './timeline.component.html',
+      styleUrls: ['./timeline.component.scss'],
+      providers: [MessagesService]
+    })
+
+    export class TimelineComponent implements OnInit {
+      // 3. 画面に受け渡すメッセージの配列を定義
+      messagesArray: Array<MessageData>;
+
+      // 4. MessagesServiceのインスタンスを受け取る
+      constructor(private messages: MessagesService) { }
+
+      ngOnInit() {
+        // 5. observeMessagesを呼びだし、受け取ったメッセージを画面に渡す
+        this.messages.observeMessages((messages) => {
+          this.messagesArray = messages;
+        });
+      }
+    }
+    ```
+1. timeline.component.htmlでメッセージデータの一覧を表示
+    ```.html
+    <app-timeline-input></app-timeline-input>
+    <div *ngFor="let message of messagesArray">{{message?.text}}</div>
+    ```
+    - ブラウザで投稿したメッセージが画面上に表示されることを確認する
+
+### タイムラインセルのコンポーネントを分離する
+Angularにて親から子のコンポーネントにデータを受け渡す方法を理解する。
+1. timeline-cellのコンポーネントを作成（ターミナルにて）
+    - ng generate component timeline-cell
+1. 親コンポーネントで受け渡すデータをセットする
+    - timeline.component.html
+    ```.html
+    <app-timeline-cell *ngFor="let message of messagesArray" [message]="message"></app-timeline-cell>
+    ```
+1. 子コンポーネントでデータを受け取る
+    - timeline-cell.component.ts
+    ```.ts
+    // 1. angular/coreからInputをインポート
+    import { Component, OnInit, Input } from '@angular/core';
+      :
+    export class TimelineCellComponent implements OnInit {
+      // 2. @Input()の後に受け取るデータを定義
+      @Input() message: MessageData;
+        :
+    }
+    ```
+    - timeline-cell.component.html
+    ```.html
+    <div class="TimelineCell">
+      <img [src]="userImageUrl">
+      <span>{{message.createdUserName}}</span>
+      <span>{{message.createdAt | date: 'yyyy/MM/dd hh:mm'}}</span>
+      <div>{{message.text}}</div>
+    </div>
+    ```
 
 ## 4. スタイルのつけ方を理解する
-sassの使い方
+スタイルのつけ方、scssの使い方をマスターする。
+### scssについて
+1. scssとは
+    - CSSで変数、サブルーチン、演算子、if文、for文、importなどを使えるようにした言語
+    - 普通のCSSがそのまま使え、変数などの書き方を覚えるだけでよい
+    - scssをさらに簡略化したsassという記法もある
+    - angularでscssを使いたい場合は、プロジェクト作成の際にstyleオプションをつけるとよい
+        - ng new AngularChat --style=scss
+1. scssの基本文法
+    - 変数は$マークで始まる
+    ```.css
+    // 変数の定義
+    $headerHeight: 44px;
+    $baseMargin: 8px;
+    // 変数の呼び出し
+    height: $headerHeight - $baseMargin * 2;
+    ```
+    - mixin（サブルーチン的なもの）
+    ```.css
+    // mixinの定義
+    @mixin border-radius($radius) {
+      -webkit-border-radius: $radius;
+      -moz-border-radius: $radius;
+      -ms-border-radius: $radius;
+      -o-border-radius: $radius;
+      border-radius: $radius;
+    }
+    // mixinの呼び出し
+    .box { @include border-radius(10px); }
+    ```
+    - 外部のscssを参照する場合は@importを用いる
+    ```.css
+    @import "../../assets/scss/sizes.scss";
+    ```
+
+### ヘッダーにスタイルをつける
+1. HTMLにクラス名を指定する
+    - header.component.html
+    ```.html
+    <header class="Header">
+      <span class="Header_title">{{headerTitle}}</span>
+      <app-login></app-login>
+    </header>
+    ```
+1. ヘッダーに色を付けて横いっぱいに表示する
+    - header.component.scss
+    ```.css
+    $headerHeight: 44px;
+    .Header {  
+      height: $headerHeight;
+      width: 100%;
+      background-color: orange;
+    }
+    ```
+1. ヘッダータイトルを白抜き、縦中央寄せにする
+    - header.component.scss
+    ```.css
+    $headerHeight: 44px;
+    $baseMargin: 8px;
+    .Header {  
+      height: $headerHeight;
+      width: 100%;
+      background-color: orange;
+
+      &_title {
+        color: white;
+        margin-left: $baseMargin;
+        height: $headerHeight;
+        line-height: $headerHeight;
+        text-align: center;
+        float: left;
+      }
+    }
+    ```
+1. ログインボタンを右上に配置する
+    ```.css
+    $headerHeight: 44px;
+    $baseMargin: 8px;
+    $errorColor: red;
+    .Login {
+      &_button {
+        background-color: rgba(255, 255, 255, 0.2);
+        color: white;
+        border: 0;
+        height: $headerHeight - $baseMargin * 2;
+        padding: $baseMargin;
+        margin-top: $baseMargin;
+        position: relative;
+        right: $baseMargin;
+        float: right;
+      }
+
+      &_errorMessage {
+        color: $errorColor;
+      }
+    }
+    ```
+1. サイズ指定や色指定を共通のファイルに分離してインポートする
+    - src/assets/scss/sizes.scss
+    ```.css
+    $baseMargin: 8px;
+    $headerHeight: 44px;
+    ```
+    - src/assets/scss/colors.scss
+    ```.css
+    $headerColor: orange;
+    $errorColor: red;
+    ```
 
 # 応用編
 Chatツールを改善しながら、より実用的なトピックを理解する
 
 ## 1. Firebaseにデプロイする
+ビルドとデプロイの復習
+1. AngularChatをビルド（ターミナルにて）
+    - AngularChatのディレクトに移動
+    - ng build
+1. ビルドしたアプリ（AngularChat/dist以下）をFirebaseデプロイ用のプロジェクト内にコピー
+    - cd ../Firebase
+    - cp -r ../AngularChat/dist/ public/
+1. Firebaseにデプロイ
+    - firebase deploy
+    - deployコマンドのログの最後の方に、「Hosting URL: https://<Project ID>.firebaseapp.com」が出てきて、そのURLにアクセスして、AngularChatの画面が出てくることを確認する。
+
 ## 2. Firebase Storageを使う
 ファイルのアップロード・ダウンロード
-## 3. Singletonパターンを理解する
-ユーザ情報を取得する
+1. ファイル選択画面を表示する
+    - timeline-input.component.html
+    ```.html
+    <input id="InputFiles" type="file" name="files[]" accept="image/*" multiple />
+    ```
+1. 選択されたファイルを受け取る
+    - timeline-input.component.ts
+    ```.ts
+    ngOnInit() {
+      this.observeFileSelection();
+    }
+      :
+    /** ファイルの選択を監視 */
+    private observeFileSelection() {
+      const inputTag = document.getElementById("InputFiles");
+      if (inputTag) {
+        inputTag.addEventListener("change", (event) => {
+          const target = <HTMLInputElement>event.target;
+          this.uploadFiles(target.files);
+        });
+      }
+    }
+
+    /** ファイルのアップロード */
+    private uploadFiles(files: FileList) {
+      // TODO: ファイルのアップロード処理
+      console.log(files);
+    }
+    ```
+1. ファイルのアップロード処理を実装
+    - messages.service.ts
+    ```.ts
+    // 1. FirebaseAppをインポート
+    import { AngularFire, FirebaseListObservable, FirebaseApp } from 'angularfire2';
+      :
+    // 2. ファイル送信のロジックを実装
+      sendFiles(files: FileList) {
+        for (let i = 0; i < files.length; i++) {
+          const file = files.item(i);
+          // 2-1. メッセージを投稿してIDを取得
+          const msg = new MessageData(null);
+          msg.fileType = file.type;
+          msg.fileName = file.name;
+          const msgRef = this.sendMessage(msg);
+          // 2-2. メッセージのIDをストレージのパスにセット
+          const storagePath = FirebaseKeys.MESSAGES + "/" + msgRef.key + "_" + msg.fileName;
+          const storageRef = this.firApp.storage().ref().child(storagePath);
+          // 2-3. ファイルをストレージにアップロードし、完了したらメッセージデータを更新
+          const task = storageRef.put(file);
+          task.then((snapshot) => {
+            msg.filePath = snapshot.metadata.fullPath;
+            msg.downloadUrl = snapshot.downloadURL;
+            msgRef.set(msg);
+          });
+        }
+      }
+        ：
+    export class MessageData {
+      // 3. ファイル用の項目を追加
+      fileType: string;
+      fileName: string;
+      filePath: string;
+      downloadUrl: string;
+        :
+      // 4. ファイルタイプの判定処理を追加（後ほど使う）
+      isPhoto(): boolean {
+        return (this.fileType && this.fileType.match(/image\/.*/ig)) ? true : false;
+      }
+    }
+    ```
+    - timeline-input.component.ts
+    ```.ts
+    /** ファイルのアップロード */
+    private uploadFiles(files: FileList) {
+      this.messagesService.sendFiles(files);
+    }
+    ```
+1. 画像の表示処理を追加
+    - timeline-cell.component.html
+    ```.html
+    <img *ngIf="imageUrl" [src]="imageUrl" class="TimelineCell_image">
+    ```
+    - timeline-cell.component.ts
+    ```.ts
+    // 1. URLを画面に受け渡すためのメンバ変数を定義
+    imageUrl: string = null;
+      :
+    // 2. メッセージタイプが写真の場合、画像を表示
+    ngOnInit() {
+      if (this.message.isPhoto && this.message.downloadUrl) {
+        this.imageUrl = this.message.downloadUrl;
+      }
+    }
+    ```
+
+## 3. ログインユーザ情報を持ち回る
+Googleからユーザ情報を取得し、ローカルに保存して持ち回る。
+1. 現在のユーザ情報を保存して持ち回るクラス（CurrentUser）を作成する
+    - login.service.ts
+    ```.ts
+    namespace CurrentUserKeys {
+      export const USER_NAME = "current_user_name";
+      export const PHOTO_URL = "current_user_photo_url";
+    }
+
+    export class CurrentUser {
+      static userName(): string {
+        return localStorage.getItem(CurrentUserKeys.USER_NAME);
+      }
+
+      static photoUrl(): string {
+        return localStorage.getItem(CurrentUserKeys.PHOTO_URL);
+      }
+
+      static setUserName(userName: string) {
+        localStorage.setItem(CurrentUserKeys.USER_NAME, userName);
+      }
+
+      static setPhotoUrl(url: string) {
+        localStorage.setItem(CurrentUserKeys.PHOTO_URL, url);
+      }
+
+      static removeUserInfo() {
+        localStorage.removeItem(CurrentUserKeys.USER_NAME);
+        localStorage.removeItem(CurrentUserKeys.PHOTO_URL);
+      }
+    }
+    ```
+1. ログイン情報からユーザ情報を取得しCurrentUserに保存する
+- login.service.ts
+```.ts
+export class LoginService {
+    :
+  login(success: () => void, failure: (error) => void) {
+    this.af.auth.login().then((authState) => {
+      // ログイン情報からユーザ情報を取得し保存
+      CurrentUser.setUserName(authState.auth.displayName);
+      CurrentUser.setPhotoUrl(authState.auth.photoURL);
+      // 成功
+      success();
+    }, (error) => {
+      // 失敗
+      failure(error);
+    });
+  }
+  logout() {
+    this.af.auth.logout();
+    // 保存した情報を削除
+    CurrentUser.removeUserInfo();
+  }
+    :
+}
+```
+1. メッセージ投稿時にユーザ情報を付加する
+- messages.service.ts
+```.ts
+export class MessageData {
+    :
+  // 1. ユーザ画像のURLを保存
+  userImageUrl: string;
+    :
+  constructor(item) {
+    if (item) {
+      :
+    } else {
+      // 2. 保存されたユーザ名とユーザ画像のURLをセット
+      this.createdUserName = CurrentUser.userName();
+      this.userImageUrl = CurrentUser.photoUrl();
+      this.createdAt = firebase.database.ServerValue.TIMESTAMP;
+    }
+  }
+```
+1. ユーザの顔写真をタイムラインに表示する
+- timeline-cell.component.ts
+```.ts
+  ngOnInit() {
+    if (this.message && this.message.isPhoto && this.message.downloadUrl) {
+      this.imageUrl = this.message.downloadUrl;
+    }
+    // 顔写真のURLがセットされていれば表示
+    if (this.message && this.message.userImageUrl) {
+      this.userImageUrl = this.message.userImageUrl;
+    }
+  }
+```
+
 ## 4. UIライブラリの利用
 UIを改善する
+
 ## 付録：デバッグツールの利用
 ## 付録：単体テストツールの利用
 

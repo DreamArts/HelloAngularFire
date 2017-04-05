@@ -3,5 +3,5 @@
   <span class="TimelineCell_userName">{{message.createdUserName}}</span>
   <span class="TimelineCell_timestamp">{{message.createdAt | date: 'yyyy/MM/dd hh:mm'}}</span>
   <div class="TimelineCell_text">{{message.text}}</div>
-
+  <img *ngIf="imageUrl" [src]="imageUrl" class="TimelineCell_image">
 </div>
