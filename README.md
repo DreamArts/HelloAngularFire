@@ -927,7 +927,6 @@ Angularにて親から子のコンポーネントにデータを受け渡す方�
         color: white;
         border: 0;
         height: $headerHeight - $baseMargin * 2;
-        padding: $baseMargin;
         margin-top: $baseMargin;
         position: relative;
         right: $baseMargin;
