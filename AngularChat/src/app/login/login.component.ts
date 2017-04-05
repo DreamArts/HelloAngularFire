@@ -8,6 +8,8 @@ import { LoginService } from '../services/login.service';
   providers: [LoginService]
 })
 export class LoginComponent implements OnInit {
+  errorMessage = null;
+  isLoggedIn = false;
 
   constructor(private loginService: LoginService) { }
 
@@ -16,9 +18,12 @@ export class LoginComponent implements OnInit {
 
   login() {
     this.loginService.login(() => {
+      this.isLoggedIn = true;
       console.log("成功");
     }, (error) => {
+      this.isLoggedIn = false;
       console.log("失敗");
+      this.errorMessage = "ログインできませんでした。";
     });
   }
 

@@ -375,6 +375,7 @@ git checkout angular_structures
     - timelineとtimeline-inputのコンポーネントを追加（ターミナルにて）
         - ng generate component timeline
         - ng generate component timeline-input
+        - ng serve
     - timeline-input.component.htmlをVisual Studio Codeで編集
     ```.html
     <textarea #inputText></textarea>
@@ -395,7 +396,7 @@ git checkout angular_structures
     <app-timeline></app-timeline>
     ```
     - 引数で受け渡しをしなくても、JavaScriptと同じようにdocument.getElementById()やJQueryでHTMLのエレメントを取得することができる。
-1. 双方向データバインド（HTML ↔ TypeScript）
+1. 双方向データバインド（HTML ↔ TypeScript） <- 実装不要
     - timeline-input.component.html
     ```.html
     <textarea [(ngModel)]="text"></textarea>
@@ -417,7 +418,7 @@ git checkout angular_structures
     ```.ts
     messagesArray = ["aaa", "bbb", "ccc"];
     ```
-1. HTMLタグの条件付き表示（*ngIf）
+1. HTMLタグの条件付き表示（*ngIf） <- 実装不要
     - login.component.html
     ```.html
     <div *ngIf="errorMessage">{{errorMessage}}</div>
@@ -455,7 +456,7 @@ git checkout angular_structures
       });
     }
     ```
-1. HTMLタグのattributeを動的に変更（[attribute名]）
+1. HTMLタグのattributeを動的に変更（[attribute名]） <- 実装不要
     - timeline-input.component.html
     ```.html
     <textarea [class]="textareaClass"></textarea>
@@ -475,7 +476,7 @@ git checkout angular_structures
       }
     }
     ```
-1. HTMLタグのclassの一部を動的に追加・削除したい場合
+1. HTMLタグのclassの一部を動的に追加・削除したい場合 <- 実装不要
     - timeline-input.component.html
     ```.html
     <textarea [class.TimelineInput_textarea]="true" [class.TimelineInput_textareaError]="hasError"></textarea>

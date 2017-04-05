@@ -1,1 +1,5 @@
-<button (click)="login()">Login</button>
+<div *ngIf="errorMessage">{{errorMessage}}</div>
+<div [ngSwitch]="isLoggedIn">
+  <button *ngSwitchCase="false" class="Login_button" (click)="login()">Login</button>
+  <button *ngSwitchCase="true" class="Login_button" (click)="logout()">Logout</button>
+</div>
