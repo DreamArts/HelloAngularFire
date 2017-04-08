@@ -8,6 +8,7 @@
     "fixNgSemantic": "cp ng-semantic.d.ts node_modules/ng-semantic/", 
     "build": "ng build",
     "test": "ng test",
+    "fixNgSemantic": "cp ng-semantic.d.ts node_modules/ng-semantic/", 
     "lint": "ng lint",
     "e2e": "ng e2e"
   },
