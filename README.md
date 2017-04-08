@@ -1284,4 +1284,4 @@ npm run fixNgSemantic
 1. Angular4とngSemantic（UIライブラリ）のバージョン不整合を解消する
     - npm run fixNgSemantic
 1. firebaseのAPIキーをセットする
-    - (FirebaseのAPIキーをセット参照)[#FirebaseのAPIキーをセット]
+    - [FirebaseのAPIキーをセット参照](https://github.com/DreamArts/HelloAngularFire#firebaseのapiキーをセット)
