@@ -1275,3 +1275,13 @@ npm run fixNgSemantic
     </div>
     ```
 
+## 付録：サンプルプロジェクトを動かす
+1. Githubからソースを取得（ターミナルにて）
+    - git clone https://github.com/DreamArts/HelloAngularFire.git
+1. 依存関係のあるライブラリをインストール
+    - cd HelloAngularFire/AngularChat
+    - npm install
+1. Angular4とngSemantic（UIライブラリ）のバージョン不整合を解消する
+    - npm run fixNgSemantic
+1. firebaseのAPIキーをセットする
+    - (FirebaseのAPIキーをセット参照)[#FirebaseのAPIキーをセット]
