@@ -166,6 +166,9 @@ Chatツールを作りながらAngularとFirebaseの基礎を理解する。
     - タイムラインの入力（timeline-input）
     - タイムライン（timeline）
     - タイムラインの各メッセージ（timeline-cell）
+- デモ
+    - https://helloangularfire-775fd.firebaseapp.com
+- [完成イメージのインストール方法](https://github.com/DreamArts/HelloAngularFire#付録サンプルプロジェクトを動かす)
 
 ## 1. Angularの4要素を理解する
 アプリの骨組みを作成する。
