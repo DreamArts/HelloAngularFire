@@ -418,24 +418,26 @@ git checkout angular_structures
     ```.ts
     messagesArray = ["aaa", "bbb", "ccc"];
     ```
-1. HTMLタグの条件付き表示（*ngIf） <- 実装不要
+1. HTMLタグの条件付き表示（*ngIf）
     - login.component.html
     ```.html
-    <div *ngIf="errorMessage">{{errorMessage}}</div>
+    <button *ngIf="!isLoggedIn" class="Login_button" (click)="login()">Login</button>
+    <button *ngIf="isLoggedIn" class="Login_button" (click)="logout()">Logout</button>
     ```
     - login.component.ts
     ```.ts
-    errorMessage: string = null
+    isLoggedIn = false;
     login() {
       this.loginService.login(() => {
         // 成功
+        this.isLoggedIn = true;
       }, (error) => {
         // 失敗
-        this.errorMessage = "ログインできませんでした。(" + error.message + ")";
+        this.isLoggedIn = false;
       });
     }
     ```
-1. HTMLタグの条件付き表示（*ngSwitch）
+1. HTMLタグの条件付き表示（*ngSwitch）  <- 実装不要
     - login.component.html
     ```.html
     <div [ngSwitch]="isLoggedIn">
